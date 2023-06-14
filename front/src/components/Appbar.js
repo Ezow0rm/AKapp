@@ -6,6 +6,8 @@ import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import { useEffect, useState } from 'react';
+import { useTheme } from '@emotion/react';
+import { DarkMode, LightMode } from '@mui/icons-material';
 
 // заголовок страницы
 export default function Appbar(props) {
@@ -14,7 +16,9 @@ export default function Appbar(props) {
   const [user, setUser] = useState({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const cookies = new Cookies();
-  
+
+  const theme = useTheme()
+
   // useEffect для проверки авторизации
   useEffect(() => {
     if (cookies.get('user')) {
@@ -39,32 +43,40 @@ export default function Appbar(props) {
           >
             <MenuIcon />
           </IconButton> */}
+          <div className='leftContent'>
+            <div className='logo'>
+              <Typography variant="h4" component="span" color='#000000'>
+                <Link to="/" id={theme.palette.mode}>
+                  <span className='font-logo'><b>SOTVETIS</b></span>
+                </Link>
+              </Typography>
+            </div>
 
-          <div className='logo'>
-            <Typography variant="h4" component="span" color='#000000'>
-              <Link to="/">
-                <span className='font-logo'><b>SOTVETIS</b></span>
-              </Link>
-            </Typography>
+            <div className='links'>
+              <Link to="/db" id={theme.palette.mode}><span className='linkTool'>Локальная база данных</span></Link>
+            </div>
+
+            <div className='links'>
+              <Link to="/net" id={theme.palette.mode}><span className='linkTool'>Интернет источники</span></Link>
+            </div>
+
+            <div className='links'>
+              <Link to="/gpt" id={theme.palette.mode}><span className='linkTool'>Искусственный интеллект</span></Link>
+            </div>
           </div>
 
-          <div className='links'>
-            <Link to="/db"><span className='linkTool'>Локальная база данных</span></Link> 
-          </div>
-          
-          <div className='links'>
-            <Link to="/net"><span className='linkTool'>Интернет источники</span></Link>
-          </div>
-
-          {!isLoggedIn && 
+          {!isLoggedIn &&
             <div className='linkProfile'>
-              <Link to='/signin'><span className='linkTool'>Вход в аккаунт</span></Link>
+              <Link to='/signin' id={theme.palette.mode}><span className='linkTool'>Вход в аккаунт</span></Link>
             </div>
           }
           {isLoggedIn &&
+          <>
             <div className='linkProfile'>
-              <Link to='/profile'><span className='linkTool'>Профиль {user.name}</span></Link>
+              <Link to='/profile' id={theme.palette.mode}><span className='linkTool'>Профиль {user.name}</span></Link>
             </div>
+            {theme.palette.mode === 'light' ? <LightMode onClick={props.toggleTheme} style={{color: cn === 'toolbar' ? '#000' : 'none'}}/> : <DarkMode onClick={props.toggleTheme}/>}
+          </>
           }
           {/* <Button color="inherit">Login</Button> */}
         </Toolbar>

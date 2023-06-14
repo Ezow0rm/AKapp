@@ -1,6 +1,7 @@
 package com.diploma.plugins
 
 import com.diploma.data.SecureFavorite
+import com.diploma.data.SourceTableDummy
 import com.diploma.data.favorite.datasource.local.LocalFavoriteDataSource
 import com.diploma.data.task.TaskEntity
 import com.diploma.data.task.TaskResponse
@@ -33,6 +34,7 @@ fun Application.configureRouting(database: Database) {
 //        Mailru(),
 //        Znanija()
     )
+    SourceTableDummy(database)
 
     // источники данных
     val localSource = LocalTaskDataSource(database)
@@ -60,12 +62,11 @@ fun Application.configureRouting(database: Database) {
         put("/local") {
             val task = call.receive<TaskEntity>()
             print(task)
-            localSource.saveTask(task)
-            call.respond(HttpStatusCode.Created)
+            call.respond(HttpStatusCode.Created, localSource.saveTask(task))
         }
         // удаление задания из локальной базы данных
         delete("/local/{id}") {
-            val id = call.parameters["id"]?.toInt()
+            val id = call.parameters["id"]?.toLong()
                 ?: return@delete call.respond(HttpStatusCode.BadRequest, "Invalid ID")
             localSource.removeTask(id)
             call.respond(HttpStatusCode.OK)
@@ -230,7 +231,7 @@ fun Application.configureRouting(database: Database) {
                 call.respond(HttpStatusCode.BadRequest, "Неверный логин")
                 return@delete
             }
-            val id = call.parameters["id"]?.toInt() ?: return@delete call.respond(HttpStatusCode.BadRequest)
+            val id = call.parameters["id"]?.toLong() ?: return@delete call.respond(HttpStatusCode.BadRequest)
             favoriteSource.removeFavorite(user.id, id)
             call.respond(HttpStatusCode.OK)
         }
